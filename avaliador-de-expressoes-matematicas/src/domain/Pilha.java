@@ -1,26 +1,28 @@
+package domain;
+
 import exceptions.StackUnderflowError;
 
-public class Pilha {
+public class Pilha<T> {
 
-	private Integer[] elements;
+	private T[] elements;
 	private int pos;
 	
 	
 	public Pilha() {
-		elements = new Integer[50];
+		elements = (T[]) new Object[50];
 		pos = -1;
 	}
 	
 	public Pilha(int size) {
-		elements = new Integer[size];
+		elements = (T[]) new Object[size];
 		this.pos = -1;
 	}
 
-	public Integer[] getElements() {
+	public T[] getElements() {
 		return elements;
 	}
 
-	public void setElements(Integer[] elements) {
+	public void setElements(T[] elements) {
 		this.elements = elements;
 	}
 
@@ -34,14 +36,11 @@ public class Pilha {
 
 	
 	public boolean isEmpty() {
-		if(pos == -1) {
-			return true;
-		}
-		return false;
-	}
+        return pos == -1;
+    }
 
 	
-	public int push(int n) {
+	public T push(T n) {
 		if(isFull()) {
 			throw new StackOverflowError("A pilha está cheia");
 		}
@@ -53,12 +52,12 @@ public class Pilha {
 	}
 
 	
-	public int pop() {
+	public T pop() {
 		if(isEmpty()) {
 			throw new StackUnderflowError("A pilha está vazia");
 		}
 
-		int n = elements[pos];
+		T n = elements[pos];
 		
 		elements[pos] = null;
 		pos--;
@@ -67,7 +66,7 @@ public class Pilha {
 	}
 
 	
-	public Integer topo() {
+	public T topo() {
 		if(pos == -1) {
 			return null;
 		}
@@ -76,11 +75,8 @@ public class Pilha {
 
 	
 	public boolean isFull() {
-		if((pos + 1) == (elements.length - 1)) {
-			return true;
-		}
-		return false;
-	}
+        return (pos + 1) == (elements.length - 1);
+    }
 
 	
 	public int sizeElements() {
