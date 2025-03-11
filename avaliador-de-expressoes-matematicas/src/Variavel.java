@@ -26,4 +26,9 @@ public class Variavel {
     public void setValor(Integer valor){
         this.valor = valor;
     }
+
+    @Override
+    public String toString(){
+        return this.getLetra() + ": " + this.getValor();
+    }
 }

@@ -67,10 +67,10 @@ public class Pilha<T> {
 
 	
 	public T topo() {
-		if(pos == -1) {
-			return null;
+		if (!isEmpty()){
+			return elements[pos];
 		}
-		return elements[pos];
+		return null;
 	}
 
 	
@@ -81,6 +81,17 @@ public class Pilha<T> {
 	
 	public int sizeElements() {
 		return pos+1;
+	}
+
+	@Override
+	public String toString(){
+		StringBuilder builder = new StringBuilder();
+
+		for (int i = 0; i < sizeElements(); i++){
+			builder.append(elements[i]);
+		}
+
+		return builder.toString();
 	}
 
 }
