@@ -1,3 +1,4 @@
+package domain;
 public class Variavel {
     
     private Character letra;
