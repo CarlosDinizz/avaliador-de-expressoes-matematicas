@@ -7,7 +7,6 @@ public class Pilha<T> {
 	private T[] elements;
 	private int pos;
 	
-	
 	public Pilha() {
 		elements = (T[]) new Object[50];
 		pos = -1;
@@ -34,12 +33,10 @@ public class Pilha<T> {
 		this.pos = size;
 	}
 
-	
 	public boolean isEmpty() {
-        return pos == -1;
+		return pos == -1;
     }
 
-	
 	public T push(T n) {
 		if(isFull()) {
 			throw new StackOverflowError("A pilha está cheia");
@@ -51,7 +48,6 @@ public class Pilha<T> {
 		return n;
 	}
 
-	
 	public T pop() {
 		if(isEmpty()) {
 			throw new StackUnderflowError("A pilha está vazia");
@@ -65,20 +61,17 @@ public class Pilha<T> {
 		return n;
 	}
 
-	
 	public T topo() {
-		if (!isEmpty()){
-			return elements[pos];
+		if (isEmpty()) {
+			throw new StackUnderflowError("A pilha está vazia");
 		}
-		return null;
+		return elements[pos];
 	}
 
-	
 	public boolean isFull() {
-        return (pos + 1) == (elements.length - 1);
+        return pos == (elements.length - 1);
     }
 
-	
 	public int sizeElements() {
 		return pos+1;
 	}

@@ -3,15 +3,13 @@ package services;
 import domain.Pilha;
 import domain.Variavel;
 
-
-
 public class CalculaPosfixa {
     
     //Faz o calculo da expressao posfixa
     //recebe uma pilha os caracteres da expressao
     //e um vetor com os valores das variaveis
-    public static Integer calculaExpressao(Pilha<Character> expressao, Variavel[] variaveis){
-        Pilha<Integer> valores = new Pilha<>();
+    public static Double calculaExpressao(Pilha<Character> expressao, Variavel[] variaveis){
+        Pilha<Double> valores = new Pilha<>();
         Pilha<Character> expressaoInversa = new Pilha<>();
 
         //inverte a pilha
@@ -52,6 +50,7 @@ public class CalculaPosfixa {
 
                 //varre o vetor de variaveis
                 for (Variavel variavel: variaveis){
+                    if (variavel == null) continue;
 
                     //vê se o caractere é igual a letra
                     if (estaDeAcordoComOCaractere(expressaoInversa.topo(), variavel)){
@@ -71,9 +70,9 @@ public class CalculaPosfixa {
     }
 
     //vê se é uma operação aritmetica
-    private static Integer realizaOperacaoAritmetica(Character topo, Pilha<Integer> valores) {
-        Integer numero;
-        Integer resultado;
+    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores) {
+        Double numero;
+        Double resultado;
 
         switch (topo){
             case '+':
@@ -92,6 +91,15 @@ public class CalculaPosfixa {
                 numero = valores.pop();
                 resultado =  valores.pop() / numero;
                 break;
+            case '^':
+                numero = valores.pop();
+                double base = valores.pop();
+                resultado = 1.0;
+
+                for (int i = 0; i < numero; i++) {
+                    resultado *= base;
+                }
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + topo);
         }
@@ -100,8 +108,8 @@ public class CalculaPosfixa {
     }
 
     //vê se a pilha tem pelo menos 2 valores
-    private static Boolean ehOperacaoValida(Pilha<Integer> valores){
-        return valores.sizeElements() + 1 >= 2;
+    private static Boolean ehOperacaoValida(Pilha<Double> valores){
+        return valores.sizeElements() >= 2;
     }
 
     //vê se o caractere é igual a letra da variavel
@@ -112,6 +120,7 @@ public class CalculaPosfixa {
     //vê se o caractere está presente no array
     private static Boolean letraEstaPresente(Character letraVariavel, Variavel[] variaveis){
         for (Variavel variavel: variaveis){
+            if (variavel == null) continue;
             if (variavel.getLetra().equals(letraVariavel)){
                 return true;
             }
@@ -120,8 +129,26 @@ public class CalculaPosfixa {
     }
 
     //vê se é uma operação aritmética
-    private static Boolean ehOperacaoAritmetica(Character charactere){
-        return charactere.equals('/') || charactere.equals('+') || charactere.equals('*') || charactere.equals('-');
+    static Boolean ehOperacaoAritmetica(Character charactere){
+        return charactere.equals('/') || charactere.equals('+') || charactere.equals('*') || charactere.equals('-') || charactere.equals('^');
+    }
+
+    //vê a prioridade das operações, ^ tem prioridade maior, */ prioridade depois do ^ e +- são os últimos
+    public static int prioridade(Character topo) {
+        String somaESub = "+-";
+        String multEDiv = "*/";
+        String expo = "^";
+
+        if (expo.indexOf(topo) != -1) {
+            return 3;
+        }
+        if (multEDiv.indexOf(topo) != -1) {
+            return 2;
+        }
+        if (somaESub.indexOf(topo) != -1){
+            return 1; 
+        }
+        return 0;
     }
 }
 

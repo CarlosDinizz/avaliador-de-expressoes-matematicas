@@ -3,11 +3,11 @@ public class Variavel {
     
     private Character letra;
     
-    private Integer valor;
+    private Double valor;
 
-    public Variavel(){}
+    private Variavel(){}
 
-    public Variavel(Character letra, Integer valor){
+    public Variavel(Character letra, Double valor){
         this.letra = letra;
         this.valor = valor;
     }
@@ -16,7 +16,7 @@ public class Variavel {
         return letra;
     }
 
-    public Integer getValor(){
+    public Double getValor(){
         return valor;
     }
 
@@ -24,7 +24,7 @@ public class Variavel {
         this.letra = letra;
     }
 
-    public void setValor(Integer valor){
+    public void setValor(Double valor){
         this.valor = valor;
     }
 

@@ -1,33 +1,38 @@
 import domain.Pilha;
 import domain.Variavel;
 import services.CalculaPosfixa;
+import services.EntradaDados;
+
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws Exception {
+        Scanner scanner = new Scanner(System.in);
 
-        //Pilha de variáveis
-        Variavel[] variaveis = {
-                new Variavel('A', 7),
-                new Variavel('B', 3),
-                new Variavel('C', 6),
-                new Variavel('D', 4),
-                new Variavel('E', 9)
-        };
+        EntradaDados.executaAEntradaDeDados();
+        Variavel[] variaveis = EntradaDados.getVariaveis();
 
-        //Pilha de Character com a expressão posfixa
-        Pilha<Character> expressao = new Pilha<>();
-        expressao.push('A');
-        expressao.push('B');
-        expressao.push('+');
-        expressao.push('C');
-        expressao.push('D');
-        expressao.push('-');
-        expressao.push('/');
-        expressao.push('E');
-        expressao.push('*');
+        while (true) {
+            System.out.print("Digite uma expressão ou EXIT para sair: ");
+            String entrada = scanner.nextLine().trim().toUpperCase();
 
-        System.out.println(expressao);
+            if (entrada.equals("EXIT")) {
+                System.out.println("Saindo...");
+                break;
+            }
 
-        System.out.println(CalculaPosfixa.calculaExpressao(expressao, variaveis));
+            Pilha<Character> expressaoPilha = new Pilha<>();
+            for (int i = 0; i < entrada.length(); i++) {
+                expressaoPilha.push(entrada.charAt(i));
+            }
+
+            try {
+                double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, variaveis);
+                System.out.println("Resultado: " + resultado);
+            } catch (Exception e) {
+                System.out.println("Erro ao calcular expressão: " + e.getMessage());
+            }
+        }
+        scanner.close();
     }
 }
