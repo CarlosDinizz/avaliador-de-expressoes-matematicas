@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 public class EntradaDados {
     public static Variavel[] variaveis = new Variavel[26]; //array de variaveis, que vai armazenar valores de A a Z
+    private static boolean gravando = false;
+    public Fila gravador = new Fila (10);
 
     public static void executaAEntradaDeDados() {
         Scanner scanner = new Scanner(System.in);
@@ -17,15 +19,39 @@ public class EntradaDados {
 
             if (entrada.equals("EXIT")) {
                 break;
+
             } else if (entrada.equals("VARS")) {
                 //se o usuario digitar vars, sera listada todas as variaveis ja atribuidas
+                if (gravando){
+                    Gravação(entrada);
+                }
                 listarVariaveis();
+
             } else if (entrada.equals("RESET")) {
                 //se o usuario digitar reset, a lista de variaveis sera resetada
+                if (gravando){
+                    Gravação(entrada);
+                }
                 resetarVariaveis();
+
             } else if (entrada.contains("=")) {
                 //se a entrada tiver o simbolo de igual, significa que o usuario quer atribuir um valor a uma variavel
+                if (gravando){
+                    Gravação(entrada);
+                }
                 atribuirValor(entrada);
+
+            } else if (entrada.equals("REC")){
+                gravando = true;
+
+            } else if (entrada.equals("STOP")){
+                gravando = false;
+
+            } else if (entrada.equals("PLAY")){
+
+            } else if (entrada.equals("ERASE")){
+                apagarGravacao();
+
             } else {
                 //se for qualquer outra coisa, vamos processar como uma expressao
                 executaAExpressao(entrada);
@@ -81,6 +107,28 @@ public class EntradaDados {
         } else {
             System.out.println("Erro");
         }
+    }
+
+
+    public static Gravação (String entrada, Fila gravador) {
+        if (gravador.isFull()){
+            gravando = false;
+        }
+        while (gravando == true){
+            gravador.enqueue(entrada);
+        }
+
+    }
+
+    private static void exibirGravacao (Fila gravador){
+        for (String comando : gravador){
+            System.out.println(comando);
+        }
+    }
+    
+
+    private static void apagarGravacao (Fila gravador){
+        gravador.clear();
     }
 
     //metodo que vai executar a expressao
