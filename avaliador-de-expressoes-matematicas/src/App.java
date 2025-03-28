@@ -17,6 +17,7 @@ public class App {
             String entrada = scanner.nextLine().trim().toUpperCase();
 
             if (entrada.equals("EXIT")) {
+                
                 System.out.println("Saindo...");
                 break;
             }
