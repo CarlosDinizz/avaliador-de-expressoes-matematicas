@@ -172,10 +172,9 @@ public class EntradaDados {
         StringBuilder sb = new StringBuilder();
         
         for(Variavel variavel: getVariaveis()){
-            if(variavel == null){
-                break;
-            }
-            sb.append(variavel.toString() + "\n");   
+            if(variavel != null){
+                sb.append(variavel.toString() + "\n");;
+            }   
         }
         gravador.enqueue(sb.toString());
     }
@@ -213,6 +212,12 @@ public class EntradaDados {
             System.out.println("Reproduzindo gravação...");
             while(!gravador.isEmpty()){
                 System.out.println(gravador.front());
+                if (gravador.front().strip().charAt(1) == '*' || gravador.front().strip().charAt(1) == '+' || gravador.front().strip().charAt(1) == '-' || gravador.front().strip().charAt(1) == '/' || gravador.front().strip().charAt(1) == '^'){
+                    // Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
+                    // if (resultado != null) {
+                    //     System.out.println(resultado);
+                    // }
+                }
                 auxiliar.enqueue(gravador.dequeue());
             }
 
