@@ -21,11 +21,11 @@ public class EntradaDados {
                 break;
 
             } else if (entrada.equals("VARS")) {
-                //se o usuario digitar vars, sera listada todas as variaveis ja atribuidas
-                if (gravando){
+                if (gravando) {
+                    System.out.println("(REC: " + (gravador.totalElementos() + 1) + "/10)");
                     vars(gravador);
-
                 }
+
                 listarVariaveis();
 
             } else if (entrada.equals("RESET")) {
@@ -33,6 +33,7 @@ public class EntradaDados {
                 if (gravando){
                     gravacao(entrada, gravador);
                 }
+
                 resetarVariaveis();
 
             } else if (entrada.contains("=")) {
@@ -40,22 +41,46 @@ public class EntradaDados {
                 if (gravando){
                     gravacao(entrada, gravador);
                 }
+
                 atribuirValor(entrada);
 
             } else if (entrada.equals("REC")){
-                gravando = true;
+                if (gravando == false) { // Verifica se já não está gravando
+                    gravando = true;
+                    System.out.println("Iniciando gravação... (REC: 0/10)");
+                } else {
+                    System.out.println("Erro: gravação já está ativa.");
+                }
 
             } else if (entrada.equals("STOP")){
-                gravando = false;
+                if (gravando) {
+                    gravando = false;
+                    System.out.println("Encerrando gravação...");
+                } else {
+                    System.out.println("Erro: gravação não está ativa.");
+                }
 
             } else if (entrada.equals("PLAY")){
-                exibirGravacao(gravador);
+                if (gravando == true) {
+                    //se estiver gravando, ignora
+                    System.out.println("Erro: comando inválido para gravação.");
+                } else {
+                    exibirGravacao(gravador);
+                }
 
             } else if (entrada.equals("ERASE")){
-                apagarGravacao(gravador);
+                if (gravando == true) {
+                    //se estiver gravando, ignora
+                    System.out.println("Erro: comando inválido para gravação.");
+                } else {
+                    apagarGravacao(gravador);
+                }
 
             } else {
-                //se for qualquer outra coisa, vamos processar como uma expressao
+                if (gravando){
+                    gravacao(entrada, gravador);
+                }
+                //se for qualquer outra coisa, processa como uma expressao
                 executaAExpressao(entrada);
             }
         }
@@ -64,19 +89,25 @@ public class EntradaDados {
 
     //metodo para listar todas as variaveis que foram criadas
     private static void listarVariaveis() {
+        boolean variavelAtiva = false;
         //passa por todas as variaveis
         for (Variavel variavel : variaveis) {
             //se a variavel nao for null, ou seja, se foi definida, imprime o valor dela
             if (variavel != null) {
                 System.out.println(variavel);
+                variavelAtiva = true;
             }
+            
+        if (variavelAtiva = false) {
+            System.out.println("Nenhuma variável definida.");
+        }
         }
     }
 
     //metodo para resetar todas as variaveis
     private static void resetarVariaveis() {
         variaveis = new Variavel[26]; //cria um novo array vazio
-        System.out.println("Variáveis resetadas.");
+        System.out.println("Variáveis reiniciadas.");
     }
 
     //metodo para atribuir um valor a uma variavel
@@ -95,43 +126,91 @@ public class EntradaDados {
                 //verifica se o caractere que representa a variavel eh uma letra
                 if (Character.isLetter(variavel)) {
                     //calcula o indice da variavel (A=0, B=1, ..., Z=25)
-                    int indice = Character.toUpperCase(variavel) - 'A';
-                    variaveis[indice] = new Variavel(variavel, valor); //atribui a variavel com o valor
-                    System.out.println("Variável " + variavel + " armazenada com valor " + valor);
+                    int localVariavel = Character.toUpperCase(variavel) - 'A';
+                    variaveis[localVariavel] = new Variavel(variavel, valor); //atribui a variavel com o valor
+                    System.out.println(variavel + " = " + valor);
                 } else {
-                    System.out.println("Entrada inválida");
+                    System.out.println("Erro: comando inválido.");
                 }
             //se o valor nao for um numero valido
             } catch (NumberFormatException e) {
-                System.out.println("Valor inválido");
+                System.out.println("Erro: valor inválido.");
             }
         //se a entrada for invalida (sem o igual ou com algo errado)
         } else {
-            System.out.println("Erro");
+            System.out.println("Erro: expressão inválida.");
         }
     }
 
+    //metodo que vai executar a expressao
+    private static void executaAExpressao(String expressao) {
+        //System.out.println("Expressão infixa: " + expressao);
+        
+        //converte a expressao infixa para posfixa
+        String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao);
+        //System.out.println("Expressão pós-fixa: " + expressaoPosfixa);
+        
+        //cria uma pilha para armazenar os caracteres da expressao
+        Pilha<Character> expressaoPilha = new Pilha<>();
+        for (int i = 0; i < expressaoPosfixa.length(); i++) {
+            expressaoPilha.push(expressaoPosfixa.charAt(i)); //coloca cada caractere na pilha
+        }
+        
+        //calcula o resultado da expressao posfixa
+        Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
+        if (resultado != null) {
+            System.out.println(resultado);
+        }
+    }
+    
+    //metodo para pegar o array de variaveis
+    public static Variavel[] getVariaveis() {
+        return variaveis;
+    }
+    
+    public static void vars(Fila<String> gravador) throws Exception{
+        StringBuilder sb = new StringBuilder();
+        
+        for(Variavel variavel: getVariaveis()){
+            if(variavel == null){
+                break;
+            }
+            sb.append(variavel.toString() + "\n");   
+        }
+        gravador.enqueue(sb.toString());
+    }
+    
+    private static void clear (Fila<String> gravador){
+        gravador = null;
+        gravador = new Fila<>();
+    }
 
     public static void gravacao (String entrada, Fila<String> gravador) throws Exception {
-        
         if (gravador.isFull()){
             gravando = false;
+            return;
         }
-        if (gravador.isEmpty()){
-            System.out.println("Iniciando gravação... (REC: 0/10");
+
+        if (gravando && gravador.totalElementos() >= 0) {
+            System.out.println("(REC: " + (gravador.totalElementos() + 1) + "/10)");
         }
-        System.out.println("(REC: " + gravador.totalElementos() + "/10)");
-        
-        if (gravando == true){
+
+        if (gravando) {
             gravador.enqueue(entrada);
+
         }
     }
-
 
     private static void exibirGravacao (Fila<String> gravador){
         Fila<String> auxiliar = new Fila<>();
 
         try {
+            if (gravador.isEmpty()) {
+                System.out.println("Não há gravação para ser reproduzida.");
+                return;
+            }
+
+            System.out.println("Reproduzindo gravação...");
             while(!gravador.isEmpty()){
                 System.out.println(gravador.front());
                 auxiliar.enqueue(gravador.dequeue());
@@ -145,52 +224,8 @@ public class EntradaDados {
             System.out.println(e.getMessage());
         }
     }
-    
+
     private static void apagarGravacao (Fila<String> gravador){
         clear(gravador);
-    }
-
-    //metodo que vai executar a expressao
-    private static void executaAExpressao(String expressao) {
-        System.out.println("Expressão infixa: " + expressao);
-
-        //converte a expressao infixa para posfixa
-        String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao);
-        System.out.println("Expressão pós-fixa: " + expressaoPosfixa);
-
-        //cria uma pilha para armazenar os caracteres da expressao
-        Pilha<Character> expressaoPilha = new Pilha<>();
-        for (int i = 0; i < expressaoPosfixa.length(); i++) {
-            expressaoPilha.push(expressaoPosfixa.charAt(i)); //coloca cada caractere na pilha
-        }
-
-        //calcula o resultado da expressao posfixa
-        Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
-        System.out.println("Resultado: " + resultado);
-    }
-
-    //metodo para pegar o array de variaveis
-    public static Variavel[] getVariaveis() {
-        return variaveis;
-    }
-
-
-    public static void vars(Fila<String> gravador) throws Exception{
-        StringBuilder sb = new StringBuilder();
-        
-        for(Variavel variavel: getVariaveis()){
-            if(variavel == null){
-                break;
-            }
-            sb.append(variavel.toString() + "\n");
-            
-        }
-
-        gravador.enqueue(sb.toString());
-    }
-
-    private static void clear(Fila<String> gravador){
-        gravador = null;
-        gravador = new Fila<>();
     }
 }

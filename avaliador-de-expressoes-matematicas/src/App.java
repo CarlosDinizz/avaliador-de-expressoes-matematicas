@@ -25,10 +25,14 @@ public class App {
             for (int i = 0; i < entrada.length(); i++) {
                 expressaoPilha.push(entrada.charAt(i));
             }
-
             try {
-                double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, variaveis);
-                System.out.println("Resultado: " + resultado);
+                Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, variaveis);
+
+                if (resultado == null) {
+                    System.out.println("Erro: Expressão inválida.");
+                } else {
+                    System.out.println(resultado);
+                }
             } catch (Exception e) {
                 System.out.println("Erro ao calcular expressão: " + e.getMessage());
             }

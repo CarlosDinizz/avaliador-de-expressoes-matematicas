@@ -28,7 +28,7 @@ public class CalculaPosfixa {
 
                 //verifica se é possivel fazer a operação. Precisa ter no minimo 2 valores
                 if (!ehOperacaoValida(valores)){
-                    throw new RuntimeException("Operação inválida");
+                    throw new RuntimeException("Operação inválida.");
                 }
 
                 //faz a operação e coloca na pilha
@@ -44,9 +44,8 @@ public class CalculaPosfixa {
 
                 //procura se a letra está no vetor de variaveis
                 if (!letraEstaPresente(expressaoInversa.topo(), variaveis)) {
-                    throw new RuntimeException("Variavel " + expressaoInversa.topo() + " não definida");
+                    throw new RuntimeException("Variavel " + expressaoInversa.topo() + " não definida.");
                 }
-
 
                 //varre o vetor de variaveis
                 for (Variavel variavel: variaveis){
@@ -89,7 +88,12 @@ public class CalculaPosfixa {
                 break;
             case '/':
                 numero = valores.pop();
-                resultado =  valores.pop() / numero;
+                if (numero == 0) {
+                    System.out.println("Erro: Divisão por zero.");
+                    resultado = null;
+                } else {
+                    resultado =  valores.pop() / numero;
+                }
                 break;
             case '^':
                 numero = valores.pop();
@@ -103,7 +107,6 @@ public class CalculaPosfixa {
             default:
                 throw new IllegalStateException("Unexpected value: " + topo);
         }
-        
         return resultado;
     }
 
