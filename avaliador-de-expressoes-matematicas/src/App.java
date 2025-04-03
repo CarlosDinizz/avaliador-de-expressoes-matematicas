@@ -1,4 +1,5 @@
 import domain.Pilha;
+import domain.Fila;
 import domain.Variavel;
 import services.CalculaPosfixa;
 import services.EntradaDados;
@@ -11,6 +12,8 @@ public class App {
 
         EntradaDados.executaAEntradaDeDados();
         Variavel[] variaveis = EntradaDados.getVariaveis();
+        Fila <String> gravador = new Fila<>();
+        boolean gravando = false;
 
         while (true) {
             System.out.print("Digite uma expressão ou EXIT para sair: ");
@@ -27,7 +30,7 @@ public class App {
                 expressaoPilha.push(entrada.charAt(i));
             }
             try {
-                Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, variaveis);
+                Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, variaveis, gravador, gravando);
 
                 if (resultado == null) {
                     System.out.println("Erro: Expressão inválida.");

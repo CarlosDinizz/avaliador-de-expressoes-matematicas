@@ -149,19 +149,20 @@ public class EntradaDados {
                 expressaoPilha.push(expressaoPosfixa.charAt(i));
             }
     
-            Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
+            Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis(), gravador, gravando);
     
-            if (resultado != null) {
+            
+            if (resultado != null && !gravando) {
                 System.out.println(resultado);
-    
-                // Adiciona a equação com o resultado na fila de gravação
-                if (gravando) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(expressao).append(" ").append(resultado);
-                    gravador.enqueue(sb.toString());
-                    System.out.println("(REC: " + gravador.totalElementos() + "/10)");
-                }
             }
+            if (gravando) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(expressao).append(" ").append(resultado);
+                gravador.enqueue(sb.toString());
+                System.out.println(expressao);
+                System.out.println("(REC: " + gravador.totalElementos() + "/10)");
+            }
+
         } catch (Exception e) {
             System.out.println("Erro ao calcular a expressão: " + e.getMessage());
         }
@@ -221,7 +222,7 @@ public class EntradaDados {
                 String expressaoComResultado = gravador.dequeue();
                 
                 // Substitui o espaço antes do resultado por uma quebra de linha
-                expressaoComResultado = expressaoComResultado.replaceFirst(" (?=[^ ]+$)", "\n");
+                expressaoComResultado = expressaoComResultado.replace(" ", "\n");
                 
                 System.out.println(expressaoComResultado);
                 auxiliar.enqueue(expressaoComResultado);
