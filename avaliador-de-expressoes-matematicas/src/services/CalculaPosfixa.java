@@ -42,7 +42,7 @@ public class CalculaPosfixa {
                 }
     
                 // Faz a operação e coloca na pilha
-                valores.push(realizaOperacaoAritmetica(expressaoInversa.topo(), valores));
+                valores.push(realizaOperacaoAritmetica(expressaoInversa.topo(), valores, gravador,gravando));
     
                 // Tira o caractere da expressão
                 expressaoInversa.pop();
@@ -53,15 +53,18 @@ public class CalculaPosfixa {
     
                 // Procura se a letra está no vetor de variáveis
                 if (!letraEstaPresente(expressaoInversa.topo(), variaveis)) {
-                    String mensagemErro = "Erro: Variável " + expressaoInversa.topo() + " não definida.";
-                    if (gravando) {
-                        try {
-                            gravador.enqueue(mensagemErro);
-                        } catch (Exception e) {
-                            System.err.println(e.getMessage());
+                    if (!(expressaoInversa.topo() == '(' || expressaoInversa.topo() == ')')){
+                        String mensagemErro = "Erro: Variável " + expressaoInversa.topo() + " não definida.";
+                        if (gravando) {
+                            try {
+                                gravador.enqueue(mensagemErro);
+                            } catch (Exception e) {
+                                System.err.println(e.getMessage());
+                            }
                         }
+                        System.out.println(mensagemErro);
+                        return null;
                     }
-                    System.out.println(mensagemErro);
                     return null;
                 }
     
@@ -89,7 +92,7 @@ public class CalculaPosfixa {
     
 
     //vê se é uma operação aritmetica
-    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores) {
+    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores, Fila <String> gravador,boolean gravando) {
         Double numero;
         Double resultado;
 
@@ -109,7 +112,17 @@ public class CalculaPosfixa {
             case '/':
                 numero = valores.pop();
                 if (numero == 0) {
-                    System.out.println("Erro: Divisão por zero.");
+                    String mensagemErro = "Erro: Divisão por zero";
+                    if (gravando){
+                        try{
+                            gravador.enqueue(mensagemErro);
+                        }
+                        catch(Exception e){
+                            System.err.println(e.getMessage());
+
+                        }
+                    }
+                    System.out.println(mensagemErro);
                     resultado = null;
                 } else {
                     resultado =  valores.pop() / numero;

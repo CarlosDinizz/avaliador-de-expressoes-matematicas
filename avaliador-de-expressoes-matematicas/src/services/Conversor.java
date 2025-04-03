@@ -1,31 +1,36 @@
 package services;
 
 import domain.Pilha;
+import domain.Fila;
 
 public class Conversor {
 
-    public static String infixaParaPosfixa(String expressaoInfixa) {
+    public static String infixaParaPosfixa(String expressaoInfixa, Fila <String> gravador, boolean gravando) {
         StringBuilder saida = new StringBuilder();
         Pilha<Character> pilha = new Pilha<>(); //cria uma pilha para armazenar os operadores
+        int contAbre = 0;
+        int contFecha = 0;
 
         //percorre todos os caracteres da expressao
         for (int i = 0; i < expressaoInfixa.length(); i++) {
             char caractere = expressaoInfixa.charAt(i);
-
+            
             //se for uma letra, adiciona direto na saida
             //ex: A+B -> A vai direto para a saida
             if (Character.isLetter(caractere)) {
                 saida.append(caractere);
-
+                
             //se for um parenteses abrindo, coloca na pilha
             //ex: (A+B) guarda o ( na pilha
             } else if (caractere == '(') {
+                contAbre++;
                 pilha.push(caractere);
 
-            //se for um parenteses fechando, remove da pilha ate achar o (
+            //se for um parenteses fechando, remove da pilha ate achar o (  (x+y-(z*m))
             //ex: (A+B) ao encontrar ), tira + e coloca na saida
             } else if (caractere == ')') {
-                while (!pilha.isEmpty() && pilha.topo() != '(') {
+                contFecha++;
+                while (!pilha.isEmpty() && pilha.topo() != '(') { // A + (B - C) * D / E
                     saida.append(pilha.pop());
                 }
                 pilha.pop(); // remove o ( da pilha, pois nao vai para a saida
@@ -38,6 +43,19 @@ public class Conversor {
                 }
                 pilha.push(caractere); //adiciona o operador na pilha
             }
+
+        }
+
+        if (contAbre != contFecha) {
+            String mensagemErro = "Parenteses não foi fechado";
+            if (gravando) {
+                try {
+                    gravador.enqueue(mensagemErro);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            System.out.println(mensagemErro);
         }
 
         //remove todos os operadores restantes da pilha e coloca na saida

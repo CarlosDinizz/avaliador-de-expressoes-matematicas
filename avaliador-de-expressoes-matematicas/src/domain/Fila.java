@@ -27,7 +27,7 @@ public class Fila <T>{
     }
     // insere um elemento no final da fila
 	public T enqueue(T e) throws Exception {
-		if (! isFull( )){
+		if (!isFull( )){
 			    this.e[this.fim++] = e;
 				return e;
 		} else throw new Exception("Oveflow - Estouro de Fila");	

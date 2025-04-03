@@ -47,7 +47,7 @@ public class EntradaDados {
             } else if (entrada.equals("REC")){
                 if (gravando == false) { // Verifica se já não está gravando
                     gravando = true;
-                    System.out.println("Iniciando gravação... (REC: 0/10)");
+                    System.out.println("Iniciando gravação... (REC: " + gravador.totalElementos() + "/10");
                 } else {
                     System.out.println("Erro: gravação já está ativa.");
                 }
@@ -142,7 +142,7 @@ public class EntradaDados {
     //metodo que vai executar a expressao
     private static void executaAExpressao(String expressao) {
         try {
-            String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao);
+            String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao, gravador, gravando);
             Pilha<Character> expressaoPilha = new Pilha<>();
     
             for (int i = 0; i < expressaoPosfixa.length(); i++) {
@@ -157,7 +157,7 @@ public class EntradaDados {
             }
             if (gravando) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(expressao).append(" ").append(resultado);
+                sb.append(expressao).append("§").append(resultado);
                 gravador.enqueue(sb.toString());
                 System.out.println(expressao);
                 System.out.println("(REC: " + gravador.totalElementos() + "/10)");
@@ -167,8 +167,6 @@ public class EntradaDados {
             System.out.println("Erro ao calcular a expressão: " + e.getMessage());
         }
     }
-    
-    
     
     //metodo para pegar o array de variaveis
     public static Variavel[] getVariaveis() {
@@ -180,7 +178,7 @@ public class EntradaDados {
         
         for(Variavel variavel: getVariaveis()){
             if(variavel != null){
-                sb.append(variavel.toString() + "\n");;
+                sb.append(variavel.toString() + "\n");
             }   
         }
         gravador.enqueue(sb.toString());
@@ -220,24 +218,23 @@ public class EntradaDados {
     
             while (!gravador.isEmpty()) {
                 String expressaoComResultado = gravador.dequeue();
-                
+
                 // Substitui o espaço antes do resultado por uma quebra de linha
-                expressaoComResultado = expressaoComResultado.replace(" ", "\n");
+                expressaoComResultado = expressaoComResultado.replace("§", "\n");
                 
                 System.out.println(expressaoComResultado);
                 auxiliar.enqueue(expressaoComResultado);
+
             }
     
             while (!auxiliar.isEmpty()) {
                 gravador.enqueue(auxiliar.dequeue());
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
     
-    
-
     private static void apagarGravacao (Fila<String> gravador){
         clear(gravador);
     }

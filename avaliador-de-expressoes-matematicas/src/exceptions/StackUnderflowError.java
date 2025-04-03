@@ -7,5 +7,4 @@ public class StackUnderflowError extends Error{
 	public StackUnderflowError(String message) {
 		super(message);
 	}
-
 }
