@@ -54,6 +54,7 @@ public class CalculaPosfixa {
                 // Procura se a letra está no vetor de variáveis
                 if (!letraEstaPresente(expressaoInversa.topo(), variaveis)) {
                     if (!(expressaoInversa.topo() == '(' || expressaoInversa.topo() == ')')){
+                        
                         String mensagemErro = "Erro: Variável " + expressaoInversa.topo() + " não definida.";
                         if (gravando) {
                             try {

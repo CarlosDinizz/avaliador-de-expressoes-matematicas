@@ -9,9 +9,6 @@ public class EntradaDados {
     private static boolean gravando = false;
     private static Fila<String> gravador = new Fila <>();
 
-    private static boolean comandoValido(String entrada) {
-        return entrada.matches("EXIT|VARS|RESET|REC|STOP|PLAY|ERASE") || entrada.contains("=") || entrada.matches("[a-zA-Z0-9+\\-*/() ]+");
-    }
 
     public static void executaAEntradaDeDados() throws Exception{
         Scanner scanner = new Scanner(System.in);
@@ -51,7 +48,7 @@ public class EntradaDados {
             } else if (entrada.equals("REC")){
                 if (gravando == false) { // Verifica se já não está gravando
                     gravando = true;
-                    System.out.println("Iniciando gravação... (REC: " + gravador.totalElementos() + "/10");
+                    System.out.println("Iniciando gravação... (REC: " + gravador.totalElementos() + "/10)");
                 } else {
                     System.out.println("Erro: gravação já está ativa.");
                 }
@@ -79,13 +76,22 @@ public class EntradaDados {
                 } else {
                     apagarGravacao(gravador);
                 }
-
-            } else if (!comandoValido(entrada) || entrada.matches("[a-zA-Z]+")) {
-                System.out.println("Erro: comando inválido.");
-            
-            } else {
+        
+            } else if (entrada.matches(".[+-/^].*")) {
                 //se for qualquer outra coisa, processa como uma expressao
                 executaAExpressao(entrada);
+            }
+            else{
+                String mensagemErro = "Comando inválido";
+                if (gravando){
+                    try{
+                        gravador.enqueue(mensagemErro);
+                    }
+                    catch(Exception e){
+                        System.err.println(e.getMessage());
+                    }
+                }
+                System.out.println(mensagemErro);
             }
         }
         scanner.close();
