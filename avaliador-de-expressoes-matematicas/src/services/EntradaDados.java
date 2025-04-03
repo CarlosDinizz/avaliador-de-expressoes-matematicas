@@ -77,9 +77,6 @@ public class EntradaDados {
                 }
 
             } else {
-                if (gravando){
-                    gravacao(entrada, gravador);
-                }
                 //se for qualquer outra coisa, processa como uma expressao
                 executaAExpressao(entrada);
             }
@@ -144,24 +141,33 @@ public class EntradaDados {
 
     //metodo que vai executar a expressao
     private static void executaAExpressao(String expressao) {
-        //System.out.println("Expressão infixa: " + expressao);
-        
-        //converte a expressao infixa para posfixa
-        String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao);
-        //System.out.println("Expressão pós-fixa: " + expressaoPosfixa);
-        
-        //cria uma pilha para armazenar os caracteres da expressao
-        Pilha<Character> expressaoPilha = new Pilha<>();
-        for (int i = 0; i < expressaoPosfixa.length(); i++) {
-            expressaoPilha.push(expressaoPosfixa.charAt(i)); //coloca cada caractere na pilha
-        }
-        
-        //calcula o resultado da expressao posfixa
-        Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
-        if (resultado != null) {
-            System.out.println(resultado);
+        try {
+            String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao);
+            Pilha<Character> expressaoPilha = new Pilha<>();
+    
+            for (int i = 0; i < expressaoPosfixa.length(); i++) {
+                expressaoPilha.push(expressaoPosfixa.charAt(i));
+            }
+    
+            Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
+    
+            if (resultado != null) {
+                System.out.println(resultado);
+    
+                // Adiciona a equação com o resultado na fila de gravação
+                if (gravando) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(expressao).append(" ").append(resultado);
+                    gravador.enqueue(sb.toString());
+                    System.out.println("(REC: " + gravador.totalElementos() + "/10)");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao calcular a expressão: " + e.getMessage());
         }
     }
+    
+    
     
     //metodo para pegar o array de variaveis
     public static Variavel[] getVariaveis() {
@@ -200,35 +206,36 @@ public class EntradaDados {
         }
     }
 
-    private static void exibirGravacao (Fila<String> gravador){
+    private static void exibirGravacao(Fila<String> gravador) {
         Fila<String> auxiliar = new Fila<>();
-
+    
         try {
             if (gravador.isEmpty()) {
                 System.out.println("Não há gravação para ser reproduzida.");
                 return;
             }
-
+    
             System.out.println("Reproduzindo gravação...");
-            while(!gravador.isEmpty()){
-                System.out.println(gravador.front());
-                if (gravador.front().strip().charAt(1) == '*' || gravador.front().strip().charAt(1) == '+' || gravador.front().strip().charAt(1) == '-' || gravador.front().strip().charAt(1) == '/' || gravador.front().strip().charAt(1) == '^'){
-                    // Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis());
-                    // if (resultado != null) {
-                    //     System.out.println(resultado);
-                    // }
-                }
-                auxiliar.enqueue(gravador.dequeue());
+    
+            while (!gravador.isEmpty()) {
+                String expressaoComResultado = gravador.dequeue();
+                
+                // Substitui o espaço antes do resultado por uma quebra de linha
+                expressaoComResultado = expressaoComResultado.replaceFirst(" (?=[^ ]+$)", "\n");
+                
+                System.out.println(expressaoComResultado);
+                auxiliar.enqueue(expressaoComResultado);
             }
-
+    
             while (!auxiliar.isEmpty()) {
                 gravador.enqueue(auxiliar.dequeue());
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
+    
+    
 
     private static void apagarGravacao (Fila<String> gravador){
         clear(gravador);
