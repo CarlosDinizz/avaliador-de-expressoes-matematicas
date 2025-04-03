@@ -9,6 +9,10 @@ public class EntradaDados {
     private static boolean gravando = false;
     private static Fila<String> gravador = new Fila <>();
 
+    private static boolean comandoValido(String entrada) {
+        return entrada.matches("EXIT|VARS|RESET|REC|STOP|PLAY|ERASE") || entrada.contains("=") || entrada.matches("[a-zA-Z0-9+\\-*/() ]+");
+    }
+
     public static void executaAEntradaDeDados() throws Exception{
         Scanner scanner = new Scanner(System.in);
 
@@ -76,6 +80,9 @@ public class EntradaDados {
                     apagarGravacao(gravador);
                 }
 
+            } else if (!comandoValido(entrada) || entrada.matches("[a-zA-Z]+")) {
+                System.out.println("Erro: comando inválido.");
+            
             } else {
                 //se for qualquer outra coisa, processa como uma expressao
                 executaAExpressao(entrada);
@@ -120,6 +127,7 @@ public class EntradaDados {
             try {
                 //tenta converter o valor para double
                 double valor = Double.parseDouble(valorDaVariavel);
+
                 //verifica se o caractere que representa a variavel eh uma letra
                 if (Character.isLetter(variavel)) {
                     //calcula o indice da variavel (A=0, B=1, ..., Z=25)

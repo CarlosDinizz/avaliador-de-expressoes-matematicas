@@ -42,7 +42,7 @@ public class CalculaPosfixa {
                 }
     
                 // Faz a operação e coloca na pilha
-                valores.push(realizaOperacaoAritmetica(expressaoInversa.topo(), valores, gravador,gravando));
+                valores.push(realizaOperacaoAritmetica(expressaoInversa.topo(), valores, gravador, gravando));
     
                 // Tira o caractere da expressão
                 expressaoInversa.pop();
@@ -50,7 +50,7 @@ public class CalculaPosfixa {
     
             // Vê se não é uma operação de +, -, * ou /
             if (!ehOperacaoAritmetica(caractere)) {
-    
+
                 // Procura se a letra está no vetor de variáveis
                 if (!letraEstaPresente(expressaoInversa.topo(), variaveis)) {
                     if (!(expressaoInversa.topo() == '(' || expressaoInversa.topo() == ')')){
@@ -89,10 +89,8 @@ public class CalculaPosfixa {
         return valores.pop();
     }
     
-    
-
     //vê se é uma operação aritmetica
-    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores, Fila <String> gravador,boolean gravando) {
+    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores, Fila<String> gravador, boolean gravando) {
         Double numero;
         Double resultado;
 

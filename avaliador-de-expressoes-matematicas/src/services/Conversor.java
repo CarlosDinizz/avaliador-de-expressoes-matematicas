@@ -26,11 +26,11 @@ public class Conversor {
                 contAbre++;
                 pilha.push(caractere);
 
-            //se for um parenteses fechando, remove da pilha ate achar o (  (x+y-(z*m))
+            //se for um parenteses fechando, remove da pilha ate achar o (
             //ex: (A+B) ao encontrar ), tira + e coloca na saida
             } else if (caractere == ')') {
                 contFecha++;
-                while (!pilha.isEmpty() && pilha.topo() != '(') { // A + (B - C) * D / E
+                while (!pilha.isEmpty() && pilha.topo() != '(') {
                     saida.append(pilha.pop());
                 }
                 pilha.pop(); // remove o ( da pilha, pois nao vai para a saida
@@ -47,7 +47,7 @@ public class Conversor {
         }
 
         if (contAbre != contFecha) {
-            String mensagemErro = "Parenteses não foi fechado";
+            String mensagemErro = "Erro: expressão inválida.";
             if (gravando) {
                 try {
                     gravador.enqueue(mensagemErro);

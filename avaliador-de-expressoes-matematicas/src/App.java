@@ -18,13 +18,13 @@ public class App {
         while (true) {
 
             try {
-            
-                System.out.print("Digite uma expressão ou EXIT para sair: ");
                 String entrada = scanner.nextLine().trim().toUpperCase();
 
+                if (entrada == null) {
+                    System.out.println("Erro: Expressão inválida.");
+                }
 
                 if (entrada.equals("EXIT")) {
-                    
                     System.out.println("Saindo...");
                     break;
                 }
@@ -53,8 +53,6 @@ public class App {
 
         }
 
-        
         scanner.close();
-        
     }
 }
