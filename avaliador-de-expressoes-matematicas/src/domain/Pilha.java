@@ -1,3 +1,7 @@
+// Arthur Roldan Slikta 10353847
+// Carlos Eduardo Diniz de Almeida 10444407
+// Guilherme Clauz Morlina da Silva 10436477
+
 package domain;
 
 import exceptions.StackUnderflowError;
