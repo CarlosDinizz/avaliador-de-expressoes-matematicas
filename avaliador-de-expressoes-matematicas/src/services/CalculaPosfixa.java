@@ -3,6 +3,7 @@ package services;
 import domain.Fila;
 import domain.Pilha;
 import domain.Variavel;
+import exceptions.VariavelNaoDefinidaException;
 
 public class CalculaPosfixa {
     
@@ -12,6 +13,7 @@ public class CalculaPosfixa {
     public static Double calculaExpressao(Pilha<Character> expressao, Variavel[] variaveis, Fila<String> gravador, boolean gravando) {
         Pilha<Double> valores = new Pilha<>();
         Pilha<Character> expressaoInversa = new Pilha<>();
+        StringBuilder erros = new StringBuilder();
     
         // Inverte a pilha
         while (!expressao.isEmpty()) {
@@ -29,7 +31,7 @@ public class CalculaPosfixa {
     
                 // Verifica se é possível fazer a operação. Precisa ter no mínimo 2 valores
                 if (!ehOperacaoValida(valores)) {
-                    String mensagemErro = "Erro: Operação inválida.";
+                    String mensagemErro = "\nErro: Operação inválida.";
                     if (gravando) {
                         try {
                             gravador.enqueue(mensagemErro);
@@ -37,8 +39,11 @@ public class CalculaPosfixa {
                             System.err.println(e.getMessage());
                         }
                     }
-                    System.out.println(mensagemErro);
-                    return null;
+                    erros.append(mensagemErro);
+                }
+
+                if (!erros.isEmpty()){
+                    throw new RuntimeException(erros.toString());
                 }
     
                 // Faz a operação e coloca na pilha
@@ -54,19 +59,9 @@ public class CalculaPosfixa {
                 // Procura se a letra está no vetor de variáveis
                 if (!letraEstaPresente(expressaoInversa.topo(), variaveis)) {
                     if (!(expressaoInversa.topo() == '(' || expressaoInversa.topo() == ')')){
-                        
-                        String mensagemErro = "Erro: Variável " + expressaoInversa.topo() + " não definida.";
-                        if (gravando) {
-                            try {
-                                gravador.enqueue(mensagemErro);
-                            } catch (Exception e) {
-                                System.err.println(e.getMessage());
-                            }
-                        }
-                        System.out.println(mensagemErro);
-                        return null;
+                        erros.append("\nVariável ").append(expressaoInversa.topo()).append(" não definida");
+                        expressaoInversa.pop();
                     }
-                    return null;
                 }
     
                 // Varre o vetor de variáveis
@@ -85,7 +80,18 @@ public class CalculaPosfixa {
                 }
             }
         }
-    
+
+        if(!erros.isEmpty()){
+            if (gravando) {
+                try {
+                    gravador.enqueue(erros.toString());
+                } catch (Exception e) {
+                    System.err.println(e.getMessage());
+                }
+            }
+            throw new VariavelNaoDefinidaException(erros.toString());
+        }
+
         // Retorna o valor
         return valores.pop();
     }

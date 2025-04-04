@@ -77,8 +77,11 @@ public class EntradaDados {
                     apagarGravacao(gravador);
                 }
         
-            } else if (entrada.matches(".[+-/^].*")) {
+            } else if (entrada.matches(".[+-//*^() ].")) {
                 //se for qualquer outra coisa, processa como uma expressao
+                executaAExpressao(entrada);
+            }
+            else if(contemOperacaoAritmetica(entrada)){
                 executaAExpressao(entrada);
             }
             else{
@@ -107,10 +110,9 @@ public class EntradaDados {
                 System.out.println(variavel);
                 variavelAtiva = true;
             }
-            
-        if (variavelAtiva = false) {
-            System.out.println("Nenhuma variável definida.");
         }
+        if (variavelAtiva == false) {
+            System.out.println("Nenhuma variável definida.");
         }
     }
 
@@ -217,6 +219,10 @@ public class EntradaDados {
             gravador.enqueue(entrada);
 
         }
+    }
+
+    private static boolean contemOperacaoAritmetica(String valor){
+        return valor.contains("+") || valor.contains("-") || valor.contains("*") || valor.contains("/") || valor.contains("^");
     }
 
     private static void exibirGravacao(Fila<String> gravador) {

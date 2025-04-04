@@ -1,2 +1,7 @@
-package exceptions;public class VariavelNaoDefinidaException {
+package exceptions;
+
+public class VariavelNaoDefinidaException extends RuntimeException{
+    public VariavelNaoDefinidaException(String message) {
+        super(message);
+    }
 }

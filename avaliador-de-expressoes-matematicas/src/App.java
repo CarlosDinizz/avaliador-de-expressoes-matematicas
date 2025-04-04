@@ -1,6 +1,7 @@
 import domain.Pilha;
 import domain.Fila;
 import domain.Variavel;
+import exceptions.VariavelNaoDefinidaException;
 import services.CalculaPosfixa;
 import services.EntradaDados;
 
@@ -42,7 +43,11 @@ public class App {
                     } else {
                         System.out.println(resultado);
                     }
-                } catch (Exception e) {
+                }
+                catch (VariavelNaoDefinidaException e) {
+                    System.out.println(e.getMessage());
+                }
+                catch (Exception e) {
                     System.out.println("Erro ao calcular expressão: " + e.getMessage());
                 }
             }
