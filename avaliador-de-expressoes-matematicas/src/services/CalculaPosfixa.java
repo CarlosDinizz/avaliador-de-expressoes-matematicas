@@ -1,6 +1,6 @@
 package services;
 
-import domain.Fila;
+import domain.FilaCircular;
 import domain.Pilha;
 import domain.Variavel;
 import exceptions.VariavelNaoDefinidaException;
@@ -10,7 +10,7 @@ public class CalculaPosfixa {
     //Faz o calculo da expressao posfixa
     //recebe uma pilha os caracteres da expressao
     //e um vetor com os valores das variaveis
-    public static Double calculaExpressao(Pilha<Character> expressao, Variavel[] variaveis, Fila<String> gravador, boolean gravando) {
+    public static Double calculaExpressao(Pilha<Character> expressao, Variavel[] variaveis, FilaCircular<String> gravador, boolean gravando) {
         Pilha<Double> valores = new Pilha<>();
         Pilha<Character> expressaoInversa = new Pilha<>();
         StringBuilder erros = new StringBuilder();
@@ -30,7 +30,7 @@ public class CalculaPosfixa {
             if (ehOperacaoAritmetica(caractere)) {
     
                 // Verifica se é possível fazer a operação. Precisa ter no mínimo 2 valores
-                if (!ehOperacaoValida(valores)) {
+                if (erros.length() == 0 && !ehOperacaoValida(valores)) {
                     String mensagemErro = "\nErro: Operação inválida.";
                     if (gravando) {
                         try {
@@ -42,7 +42,7 @@ public class CalculaPosfixa {
                     erros.append(mensagemErro);
                 }
 
-                if (!erros.isEmpty()){
+                if (erros.length() != 0){
                     throw new RuntimeException(erros.toString());
                 }
     
@@ -81,7 +81,7 @@ public class CalculaPosfixa {
             }
         }
 
-        if(!erros.isEmpty()){
+        if(erros.length() != 0){
             if (gravando) {
                 try {
                     gravador.enqueue(erros.toString());
@@ -97,7 +97,7 @@ public class CalculaPosfixa {
     }
     
     //vê se é uma operação aritmetica
-    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores, Fila<String> gravador, boolean gravando) {
+    private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores, FilaCircular<String> gravador, boolean gravando) {
         Double numero;
         Double resultado;
 

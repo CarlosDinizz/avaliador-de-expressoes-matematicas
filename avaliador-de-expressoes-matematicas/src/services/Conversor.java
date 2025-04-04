@@ -1,11 +1,11 @@
 package services;
 
 import domain.Pilha;
-import domain.Fila;
+import domain.FilaCircular;
 
 public class Conversor {
 
-    public static String infixaParaPosfixa(String expressaoInfixa, Fila <String> gravador, boolean gravando) {
+    public static String infixaParaPosfixa(String expressaoInfixa, FilaCircular <String> gravador, boolean gravando) {
         StringBuilder saida = new StringBuilder();
         Pilha<Character> pilha = new Pilha<>(); //cria uma pilha para armazenar os operadores
         int contAbre = 0;
@@ -56,6 +56,7 @@ public class Conversor {
                 }
             }
             System.out.println(mensagemErro);
+            return null;
         }
 
         //remove todos os operadores restantes da pilha e coloca na saida
@@ -67,46 +68,3 @@ public class Conversor {
         return saida.toString();
     }
 }
-
-/*
-Funcionamento
-
-ex 1:
-Entrada: (A+B)*C
-
-   ( entra na pilha
-   A vai para saida
-   + entra na pilha
-   B vai para saida
-   + sai da pilha
-   ( sai da pilha
-   * entra na pilha
-   C vai para saida
-   * sai da pilha
-
-Saida:  AB+C*
-
-ex 2:
-Entrada:  (A+B)*(C-D)/E
-
-   ( entra na pilha
-   A vai para saida
-   + entra na pilha
-   B vai para saida
-   + sai da pilha
-   ( sai da pilha
-   * entra na pilha
-   ( entra na pilha
-   C vai para saida
-   - entra na pilha
-   D vai para saida
-   - sai da pilha
-   ( sai da pilha
-   * sai da pilha
-   / entra na pilha
-   E vai para saida
-   / sai da pilha
-
-Saida:  AB+CD-*E/
- */
-

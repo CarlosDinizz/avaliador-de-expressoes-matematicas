@@ -1,13 +1,16 @@
 package services;
-import domain.Fila;
+
+import domain.FilaCircular;
 import domain.Pilha;
 import domain.Variavel;
+import exceptions.VariavelNaoDefinidaException;
+
 import java.util.Scanner;
 
 public class EntradaDados {
     public static Variavel[] variaveis = new Variavel[26]; //array de variaveis, que vai armazenar valores de A a Z
     private static boolean gravando = false;
-    private static Fila<String> gravador = new Fila <>();
+    private static FilaCircular<String> gravador = new FilaCircular <>(10);
 
 
     public static void executaAEntradaDeDados() throws Exception{
@@ -74,6 +77,7 @@ public class EntradaDados {
                     //se estiver gravando, ignora
                     System.out.println("Erro: comando inválido para gravação.");
                 } else {
+                    System.out.println("Gravação apagada.");
                     apagarGravacao(gravador);
                 }
         
@@ -83,9 +87,19 @@ public class EntradaDados {
             }
             else if(contemOperacaoAritmetica(entrada)){
                 executaAExpressao(entrada);
-            }
-            else{
-                String mensagemErro = "Comando inválido";
+
+            } else if (entrada.length() == 1 && Character.isLetter(entrada.charAt(0))) {
+                char variavel = entrada.charAt(0);
+                int indice = Character.toUpperCase(variavel) - 'A';
+            
+                if (variaveis[indice] != null) {
+                    System.out.println(variaveis[indice].getValor()); // Exibe o valor armazenado
+                } else {
+                    System.out.println("Erro: variável " + variavel + " não definida.");
+                }
+
+            } else{
+                String mensagemErro = "Erro: comando inválido.";
                 if (gravando){
                     try{
                         gravador.enqueue(mensagemErro);
@@ -107,7 +121,9 @@ public class EntradaDados {
         for (Variavel variavel : variaveis) {
             //se a variavel nao for null, ou seja, se foi definida, imprime o valor dela
             if (variavel != null) {
-                System.out.println(variavel);
+                if (!gravando) {
+                    System.out.println(variavel);
+                }
                 variavelAtiva = true;
             }
         }
@@ -155,9 +171,38 @@ public class EntradaDados {
         }
     }
 
+    public static boolean validarExpressao(String expressao) {
+        Pilha<Character> pilhaCaracteres = new Pilha<>();
+        boolean ultimaFoiLetra = false; // Para verificar se tem palavras inválidas
+    
+        for (int i = expressao.length() - 1; i >= 0; i--) {
+            pilhaCaracteres.push(expressao.charAt(i));
+        }
+    
+        while (!pilhaCaracteres.isEmpty()) {
+            char caracterDaExpressao = pilhaCaracteres.pop();
+    
+            if (Character.isLetter(caracterDaExpressao)) {
+                if (ultimaFoiLetra) {
+                    return false;
+                }
+                ultimaFoiLetra = true;
+            } else {
+                ultimaFoiLetra = false;
+            }
+        }
+        return true;
+    }
+
     //metodo que vai executar a expressao
     private static void executaAExpressao(String expressao) {
         try {
+
+            if (!validarExpressao(expressao)) {
+                System.out.println("Erro: expressão inválida.");
+                return;
+            }
+
             String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao, gravador, gravando);
             Pilha<Character> expressaoPilha = new Pilha<>();
     
@@ -167,20 +212,27 @@ public class EntradaDados {
     
             Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis(), gravador, gravando);
     
-            
             if (resultado != null && !gravando) {
                 System.out.println(resultado);
             }
+
             if (gravando) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(expressao).append("§").append(resultado);
-                gravador.enqueue(sb.toString());
+                try {
+                    gravador.enqueue(sb.toString());
+                } catch (Exception e) {  // Captura qualquer erro no gravador
+                    System.err.println("Erro ao gravar: " + e.getMessage());
+                }
                 System.out.println(expressao);
                 System.out.println("(REC: " + gravador.totalElementos() + "/10)");
             }
-
-        } catch (Exception e) {
-            System.out.println("Erro ao calcular a expressão: " + e.getMessage());
+    
+        } catch (VariavelNaoDefinidaException e) {
+            System.out.println(e.getMessage());
+            return;
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
     
@@ -189,7 +241,7 @@ public class EntradaDados {
         return variaveis;
     }
     
-    public static void vars(Fila<String> gravador) throws Exception{
+    public static void vars(FilaCircular<String> gravador) throws Exception{
         StringBuilder sb = new StringBuilder();
         
         for(Variavel variavel: getVariaveis()){
@@ -199,14 +251,10 @@ public class EntradaDados {
         }
         gravador.enqueue(sb.toString());
     }
-    
-    private static void clear (Fila<String> gravador){
-        gravador = null;
-        gravador = new Fila<>();
-    }
 
-    public static void gravacao (String entrada, Fila<String> gravador) throws Exception {
-        if (gravador.isFull()){
+    public static void gravacao (String entrada, FilaCircular<String> gravador) throws Exception {
+        if (gravador.qIsFull()){
+            System.out.println("Encerrando gravação...");
             gravando = false;
             return;
         }
@@ -225,18 +273,18 @@ public class EntradaDados {
         return valor.contains("+") || valor.contains("-") || valor.contains("*") || valor.contains("/") || valor.contains("^");
     }
 
-    private static void exibirGravacao(Fila<String> gravador) {
-        Fila<String> auxiliar = new Fila<>();
+    private static void exibirGravacao(FilaCircular<String> gravador) {
+        FilaCircular<String> auxiliar = new FilaCircular<>();
     
         try {
-            if (gravador.isEmpty()) {
+            if (gravador.qIsEmpty()) {
                 System.out.println("Não há gravação para ser reproduzida.");
                 return;
             }
     
             System.out.println("Reproduzindo gravação...");
     
-            while (!gravador.isEmpty()) {
+            while (!gravador.qIsEmpty()) {
                 String expressaoComResultado = gravador.dequeue();
 
                 // Substitui o espaço antes do resultado por uma quebra de linha
@@ -247,7 +295,7 @@ public class EntradaDados {
 
             }
     
-            while (!auxiliar.isEmpty()) {
+            while (!auxiliar.qIsEmpty()) {
                 gravador.enqueue(auxiliar.dequeue());
             }
         } catch (Exception e) {
@@ -255,7 +303,7 @@ public class EntradaDados {
         }
     }
     
-    private static void apagarGravacao (Fila<String> gravador){
-        clear(gravador);
+    private static void apagarGravacao (FilaCircular<String> gravador){
+        gravador.clear();
     }
 }

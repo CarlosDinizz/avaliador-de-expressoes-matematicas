@@ -1,5 +1,5 @@
 import domain.Pilha;
-import domain.Fila;
+import domain.FilaCircular;
 import domain.Variavel;
 import exceptions.VariavelNaoDefinidaException;
 import services.CalculaPosfixa;
@@ -13,21 +13,20 @@ public class App {
 
         EntradaDados.executaAEntradaDeDados();
         Variavel[] variaveis = EntradaDados.getVariaveis();
-        Fila <String> gravador = new Fila<>();
+        FilaCircular <String> gravador = new FilaCircular<>();
         boolean gravando = false;
 
         while (true) {
 
-            try {
                 String entrada = scanner.nextLine().trim().toUpperCase();
 
-                if (entrada == null) {
-                    System.out.println("Erro: Expressão inválida.");
+                if (entrada.equals("EXIT")) {
+                    break;
                 }
 
-                if (entrada.equals("EXIT")) {
-                    System.out.println("Saindo...");
-                    break;
+                if (entrada.isEmpty()) {
+                    System.out.println("Erro: Expressão inválida.");
+                    return;
                 }
 
                 Pilha<Character> expressaoPilha = new Pilha<>();
@@ -51,13 +50,6 @@ public class App {
                     System.out.println("Erro ao calcular expressão: " + e.getMessage());
                 }
             }
-            catch(Exception e){
-                System.out.println(e.toString());
-            }
-
-
+            scanner.close();
         }
-
-        scanner.close();
-    }
 }

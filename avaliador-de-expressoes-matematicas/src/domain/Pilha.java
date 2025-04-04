@@ -48,7 +48,7 @@ public class Pilha<T> {
 		return n;
 	}
 
-	public T pop() {
+	public T pop() throws StackUnderflowError{
 		if(isEmpty()) {
 			throw new StackUnderflowError("A pilha está vazia");
 		}
