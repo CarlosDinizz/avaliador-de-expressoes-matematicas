@@ -173,16 +173,19 @@ public class EntradaDados {
 
     public static boolean validarExpressao(String expressao) {
         Pilha<Character> pilhaCaracteres = new Pilha<>();
-        boolean ultimaFoiLetra = false; // Para verificar se tem palavras inválidas
+        boolean ultimaFoiLetra = false; // Flag para detectar duas letras seguidas (ex: "ab" é inválido)
     
+        // Empilha os caracteres da expressão (do fim para o início)
         for (int i = expressao.length() - 1; i >= 0; i--) {
             pilhaCaracteres.push(expressao.charAt(i));
         }
     
+        // Percorre a pilha analisando a sequência dos caracteres
         while (!pilhaCaracteres.isEmpty()) {
             char caracterDaExpressao = pilhaCaracteres.pop();
     
             if (Character.isLetter(caracterDaExpressao)) {
+                // Se já havia uma letra antes, é inválido (duas letras seguidas)
                 if (ultimaFoiLetra) {
                     return false;
                 }
@@ -191,37 +194,45 @@ public class EntradaDados {
                 ultimaFoiLetra = false;
             }
         }
+    
+        // Se não encontrou duas letras seguidas, a expressão é válida
         return true;
     }
+    
 
     //metodo que vai executar a expressao
     private static void executaAExpressao(String expressao) {
         try {
-
+            // Verifica se a expressão é válida
             if (!validarExpressao(expressao)) {
                 System.out.println("Erro: expressão inválida.");
                 return;
             }
-
-            String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao, gravador, gravando);
-            Pilha<Character> expressaoPilha = new Pilha<>();
     
+            // Converte a expressão de infixa para pós-fixa
+            String expressaoPosfixa = Conversor.infixaParaPosfixa(expressao, gravador, gravando);
+    
+            // Armazena a expressão pós-fixa em uma pilha de caracteres
+            Pilha<Character> expressaoPilha = new Pilha<>();
             for (int i = 0; i < expressaoPosfixa.length(); i++) {
                 expressaoPilha.push(expressaoPosfixa.charAt(i));
             }
     
+            // Calcula o resultado da expressão pós-fixa
             Double resultado = CalculaPosfixa.calculaExpressao(expressaoPilha, EntradaDados.getVariaveis(), gravador, gravando);
     
+            // Exibe o resultado se não estiver gravando
             if (resultado != null && !gravando) {
                 System.out.println(resultado);
             }
-
+    
+            // Se estiver gravando, armazena a expressão e o resultado
             if (gravando) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(expressao).append("§").append(resultado);
                 try {
-                    gravador.enqueue(sb.toString());
-                } catch (Exception e) {  // Captura qualquer erro no gravador
+                    gravador.enqueue(sb.toString());  // Tenta gravar
+                } catch (Exception e) {
                     System.err.println("Erro ao gravar: " + e.getMessage());
                 }
                 System.out.println(expressao);
@@ -229,9 +240,11 @@ public class EntradaDados {
             }
     
         } catch (VariavelNaoDefinidaException e) {
+            // Erro se alguma variável usada na expressão não foi definida
             System.out.println(e.getMessage());
             return;
         } catch (RuntimeException e) {
+            // Captura outros erros de execução
             System.out.println(e.getMessage());
         }
     }
@@ -252,6 +265,8 @@ public class EntradaDados {
         gravador.enqueue(sb.toString());
     }
 
+
+    //
     public static void gravacao (String entrada, FilaCircular<String> gravador) throws Exception {
         if (gravador.qIsFull()){
             System.out.println("Encerrando gravação...");
@@ -273,6 +288,8 @@ public class EntradaDados {
         return valor.contains("+") || valor.contains("-") || valor.contains("*") || valor.contains("/") || valor.contains("^");
     }
 
+
+    //Imprime o gravador
     private static void exibirGravacao(FilaCircular<String> gravador) {
         FilaCircular<String> auxiliar = new FilaCircular<>();
     
@@ -287,7 +304,7 @@ public class EntradaDados {
             while (!gravador.qIsEmpty()) {
                 String expressaoComResultado = gravador.dequeue();
 
-                // Substitui o espaço antes do resultado por uma quebra de linha
+                // Faz uma quebra de linha da equação com o resultado
                 expressaoComResultado = expressaoComResultado.replace("§", "\n");
                 
                 System.out.println(expressaoComResultado);
@@ -302,7 +319,8 @@ public class EntradaDados {
             e.printStackTrace();
         }
     }
-    
+
+    // Apaga o gravador
     private static void apagarGravacao (FilaCircular<String> gravador){
         gravador.clear();
     }

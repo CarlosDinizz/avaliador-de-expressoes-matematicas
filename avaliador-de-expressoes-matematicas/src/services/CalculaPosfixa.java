@@ -98,55 +98,69 @@ public class CalculaPosfixa {
     
     //vê se é uma operação aritmetica
     private static Double realizaOperacaoAritmetica(Character topo, Pilha<Double> valores, FilaCircular<String> gravador, boolean gravando) {
-        Double numero;
-        Double resultado;
-
-        switch (topo){
+        Double numero;     // Armazena temporariamente o operando retirado do topo da pilha
+        Double resultado;  // Resultado da operação
+    
+        switch (topo) {
             case '+':
+                // Soma dois valores do topo da pilha
                 numero = valores.pop();
                 resultado = numero + valores.pop();
                 break;
+    
             case '-':
+                // Subtrai o segundo valor pelo primeiro (ordem importa)
                 numero = valores.pop();
                 resultado = valores.pop() - numero;
                 break;
+    
             case '*':
+                // Multiplica dois valores do topo da pilha
                 numero = valores.pop();
                 resultado = valores.pop() * numero;
                 break;
+    
             case '/':
+                // Divide o segundo valor pelo primeiro, tratando divisão por zero
                 numero = valores.pop();
                 if (numero == 0) {
                     String mensagemErro = "Erro: Divisão por zero";
+                    
+                    // Se estiver gravando, salva o erro na fila
                     if (gravando){
-                        try{
+                        try {
                             gravador.enqueue(mensagemErro);
-                        }
-                        catch(Exception e){
+                        } catch (Exception e) {
                             System.err.println(e.getMessage());
-
                         }
                     }
+    
                     System.out.println(mensagemErro);
                     resultado = null;
                 } else {
-                    resultado =  valores.pop() / numero;
+                    resultado = valores.pop() / numero;
                 }
                 break;
+    
             case '^':
-                numero = valores.pop();
-                double base = valores.pop();
+                // Calcula a potência (base ^ expoente), apenas para expoentes inteiros positivos
+                numero = valores.pop();       // Expoente
+                double base = valores.pop();  // Base
                 resultado = 1.0;
-
+    
                 for (int i = 0; i < numero; i++) {
                     resultado *= base;
                 }
                 break;
+    
             default:
+                // Caso o operador não seja reconhecido, lança exceção
                 throw new IllegalStateException("Unexpected value: " + topo);
         }
+    
         return resultado;
     }
+    
 
     //vê se a pilha tem pelo menos 2 valores
     private static Boolean ehOperacaoValida(Pilha<Double> valores){

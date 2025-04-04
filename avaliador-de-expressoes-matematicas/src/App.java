@@ -7,10 +7,12 @@ import services.EntradaDados;
 
 import java.util.Scanner;
 
+
 public class App {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
 
+        
         EntradaDados.executaAEntradaDeDados();
         Variavel[] variaveis = EntradaDados.getVariaveis();
         FilaCircular <String> gravador = new FilaCircular<>();
